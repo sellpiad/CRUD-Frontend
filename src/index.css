@@ -11,3 +11,14 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.fixed-min-width {
+  min-width: 600px;
+}
+
+@font-face {
+  font-family: 'TTHakgyoansimUndongjangL';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2402_keris@1.0/TTHakgyoansimUndongjangL.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+}
