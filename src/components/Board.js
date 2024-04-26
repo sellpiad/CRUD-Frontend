@@ -1,18 +1,15 @@
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Container, Row } from "react-bootstrap";
 import styled from "styled-components";
-import CreateModal from './CreateModal';
-import PostModal from "./PostModal";
-import StyledBox from "./StyledBox";
 
 
 // 테이블 스타일 정의
 const StyledTable = styled.table`
   border-collapse: collapse;
-  font-size: 0.9em;
+  font-size: large;
   color: black;
   border-radius: 5px 5px 5px 5px;
-  overflow: hidden;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
   width:100%;
 `;
@@ -37,96 +34,64 @@ const StyledCell = styled.td`
 `;
 
 
-export default function Board() {
+export default function Board({isCreateOpen,isPostOpen,isEditOpen,editButtonHandler, postButtonHandler, postId}) {
 
-    const [isCreateModalOpen, setCreateModalOpen] = useState(false);
-    const [isPostModalOpen, setPostModalOpen] = useState(false);
-    const [clickPostID, setPostID] = useState(null);
+    // 테이블 헤더
     const [headers, setHeaders] = useState([]);
 
-
-    const createButtonHandler = () => {
-        setCreateModalOpen(true);
-    }
-
-    const postModalHandler = (id) => {
-        setPostID(id)
-    }
-
-    const closeCreateModal = () => {
-        setCreateModalOpen(false)
-        setPostID(null)
-    }
-
-    const openPostModal = () => {
-        setPostModalOpen(true);
-    }
-
-    const closePostModal = () => {
-        setPostModalOpen(false)
-        setPostID()
-    }
-
-    const editPost = () => {
-        setPostModalOpen(false)
-        setCreateModalOpen(true)
-    }
-
-
     useEffect(() => {
-        (!isCreateModalOpen, !isPostModalOpen) &&
+        if (!isCreateOpen && !isPostOpen && !isEditOpen) {
             axios.get('/api/getList')
                 .then(response => {
-                    setHeaders(response.data);
+                    setHeaders(response.data)
                 })
                 .catch(error => console.log(error))
-    }, [isPostModalOpen, isCreateModalOpen]);
+        }
+
+    }, [isPostOpen, isCreateOpen, isEditOpen]);
 
 
     return (
+        <Container>
+            <Row style={{overflowY:"scroll", maxHeight:"350px", borderRadius:"5px 5px 5px 5px"}}>
+                <StyledTable>
+                    <thead style={{position:"sticky", top:0}}>
+                        <StyledRow key={"table-header"}>
+                            {
+                                headers.length > 0 &&
+                                Object.keys(headers[0]).map((el) => (
+                                    <StyledHeader key={`header-${el}`}>
+                                        {{
+                                            id: "번호",
+                                            title: "제목",
+                                            author: "글쓴이",
+                                            createTime: "날짜"
+                                        }[el]}
+                                    </StyledHeader>
+                                ))
 
-        <StyledBox>
-            <StyledTable>
-                <thead>
-                    <StyledRow key={"table-header"}>
+                            }
+                        </StyledRow>
+                    </thead>
+                    <tbody>
                         {
-                            headers.length > 0 &&
-                            Object.keys(headers[0]).map((el,index) => (
-                                <StyledHeader key={`header-${index}`}>
-                                    {{
-                                        id: "번호",
-                                        title: "제목",
-                                        author: "글쓴이",
-                                        createTime: "날짜"
-                                    }[el]}
-                                </StyledHeader>
-                            ))
+                            headers.length > 0 ?
+                                Object.values(headers).map((row, index) => (
+                                    <StyledRow key={`post-${index}`}>
+                                        {
 
+                                            Object.keys(row).map((data, index) => (
+                                                data === 'title' ?
+                                                    <StyledCell key={`cell-${index}`}><div onClick={() => postButtonHandler(row['id'])}>{row[data]}</div></StyledCell>
+                                                    : <StyledCell key={`cell-${index}`}>{row[data]}</StyledCell>
+                                            ))
+                                        }
+                                    </StyledRow>
+                                )) : null
                         }
-                    </StyledRow>
-                </thead>
-                <tbody>
-                    {
-                        headers.length > 0 ?
-                            Object.values(headers).map((row, index) => (
-                                <StyledRow key={`post-${index}`}>
-                                    {
-
-                                        Object.keys(row).map((data, index) => (
-                                            data === 'title' ?
-                                                <StyledCell key={`cell-${index}`}><div onClick={() => postModalHandler(row['id'])}>{row[data]}</div></StyledCell>
-                                                : <StyledCell key={`cell-${index}`}>{row[data]}</StyledCell>
-                                        ))
-                                    }
-                                </StyledRow>
-                            )) : null
-                    }
-                </tbody>
-            </StyledTable>
-            <button onClick={createButtonHandler}>글 등록</button>
-            <CreateModal isOpen={isCreateModalOpen} setPostId={setPostID} closeModal={closeCreateModal} editPostId={clickPostID}></CreateModal>
-            <PostModal clickedPostID={clickPostID} setPostID={setPostID} isOpen={isPostModalOpen} openModal={openPostModal} closeModal={closePostModal} editPost={editPost}></PostModal>
-        </StyledBox>
-        
+                    </tbody>
+                </StyledTable>
+            </Row>
+        </Container>
     )
 }
