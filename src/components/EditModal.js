@@ -13,8 +13,12 @@ export default function EditModal({ show, onHide, postId, setPostId }) {
 
 
     const clickedExitBtn = () => {
-        onHide()
+        onHide(false)
         setPostId()
+        setTitle('')
+        setAuthor('')
+        setContent('')
+        setEditBtn(false)
     }
 
     const titleHandler = (e) => {
@@ -30,7 +34,7 @@ export default function EditModal({ show, onHide, postId, setPostId }) {
     // 포스트 정보 불러오기
 
     useEffect(() => {
-        if (postId !== null) {
+        if (postId !== null && show!==false) {
             axios.get('/api/getPost?id=' + postId)
                 .then((response) => {
                     response.data.title && setTitle(response.data.title)
@@ -38,21 +42,16 @@ export default function EditModal({ show, onHide, postId, setPostId }) {
                     response.data.content && setContent(response.data.content)
                 })
                 .catch((error) => console.log(error));
-        } else {
-            setTitle('')
-            setAuthor('')
-            setContent('')
-            setEditBtn(false)
-        }
-    }, [postId])
+        } 
+    }, [show])
 
-    // 포스트 수정
+    // 포스트 수정 버튼 클릭
 
     useEffect(() => {
 
         if (editBtn === true && postId !== null) {
             axios.post('/api/updatePost', { id: postId, title: title, author: author, content: content })
-                .then((response) => { response.data && onHide(); setPostId(); })
+                .then((response) => clickedExitBtn() )
                 .catch(error => console.log(error))
         }
 
@@ -60,8 +59,8 @@ export default function EditModal({ show, onHide, postId, setPostId }) {
 
 
     return (
-        <Modal show={show} onHide={clickedExitBtn} centered={true}>
-            <Modal.Header closeButton>
+        <Modal show={show} onHide={onHide} centered={true}>
+            <Modal.Header closeButton onClick={clickedExitBtn}>
                 <Form.Group className="mb-3">
                     <Form.Label>제목</Form.Label>
                     <Form.Control type="title" placeholder="제목" value={title} onChange={titleHandler} />

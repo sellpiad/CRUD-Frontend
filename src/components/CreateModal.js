@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Form, Modal,Button } from "react-bootstrap";
+import { Form, Modal, Button } from "react-bootstrap";
 
 export default function CreateModal({ show, onHide }) {
 
@@ -12,8 +12,8 @@ export default function CreateModal({ show, onHide }) {
     useEffect(() => {
 
         if (createBtn == true) {
-            axios.post('/api/createPost', { title: title, author: author, content: content })
-                .then((response) => { response.data && onHide() })
+            axios.post('/api/createPost', { title: title, content: content })
+                .then((response) => { response.data && onHide(); setCreateBtn(false); setTitle(''); setContent('')})
                 .catch(error => console.log(error))
         }
 
@@ -21,10 +21,6 @@ export default function CreateModal({ show, onHide }) {
 
     const saveTitle = (event) => (
         setTitle(event.target.value)
-    )
-
-    const saveAuthor = (event) => (
-        setAuthor(event.target.value)
     )
 
     const saveContent = (event) => (
@@ -37,6 +33,7 @@ export default function CreateModal({ show, onHide }) {
                 <Form.Group className="mb-3">
                     <Form.Label>제목</Form.Label>
                     <Form.Control type="title" placeholder="제목" value={title} onChange={saveTitle} />
+                    <input type="hidden" name="_csrf" value="${XSRF-TOKEN}" />
                 </Form.Group>
             </Modal.Header>
 

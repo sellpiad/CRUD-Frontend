@@ -4,11 +4,11 @@ import { Modal, Button } from "react-bootstrap";
 
 export default function PostModal({ show, onHide, postId, setPostId }) {
 
-    const [post, setPost] = useState({ title: '', author: '', date: '', content: '' });
+    const [post, setPost] = useState({ title: '', author: '', date: '', content: '', editable: false, deletable: false});
     const [deleteBtn, setDeleteBtn] = useState(false);
 
     const clickedDeleteBtn = (event) => setDeleteBtn(true)
-    const clickedEditBtn = (event) => onHide()
+    const clickedEditBtn = (event) => {onHide()}
     const clickedExitBtn = () => {
         onHide()
         setPostId()
@@ -31,7 +31,7 @@ export default function PostModal({ show, onHide, postId, setPostId }) {
 
         if (deleteBtn == true) {
             axios.get('/api/deletePost?id=' + postId)
-                .then((response) => {onHide(); setPostId();})
+                .then((response) => {onHide(); setPostId(); setDeleteBtn(false);})
                 .catch(error => console.log(error))
         }
 
@@ -39,8 +39,8 @@ export default function PostModal({ show, onHide, postId, setPostId }) {
 
 
     return (
-        <Modal show={show} onHide={clickedExitBtn} centered={true}>
-            <Modal.Header closeButton>
+        <Modal show={show} onHide={onHide} centered={true}>
+            <Modal.Header closeButton onClick={clickedExitBtn}>
                 <Modal.Title>{post.title}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
@@ -51,8 +51,8 @@ export default function PostModal({ show, onHide, postId, setPostId }) {
                 <p>내용: {post.content}</p>
             </Modal.Body>
             <Modal.Footer>
-                <Button onClick={clickedEditBtn}>수정</Button>
-                <Button onClick={clickedDeleteBtn}>삭제</Button>
+                <Button style={{display: post.editable ? "inline-block" : "none"}} onClick={clickedEditBtn}>수정</Button>
+                <Button style={{display: post.deletable ? "inline-block" : "none"}} onClick={clickedDeleteBtn}>삭제</Button>
             </Modal.Footer>
         </Modal>
 
