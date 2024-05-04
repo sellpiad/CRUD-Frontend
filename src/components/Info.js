@@ -1,12 +1,20 @@
-import { Row, Col, Button, Image, Badge } from "react-bootstrap"
+import { Badge, Button, Col, Image, Row } from "react-bootstrap"
+import { useDispatch, useSelector } from "react-redux"
 import sadPepe from '../nothing_pepe.png'
+import { persistor } from ".."
+import { instance } from "../util/useAxiosInter"
 
-export default function Info({ id, createDate, setLogin, rank,createButtonHandler }) {
+export default function Info({ createButtonHandler }) {
 
     const logoutHandler = () => {
-        localStorage.clear()
-        setLogin(false)
+        instance.get('/api/userLogout')
+        .then((res) => {
+            persistor.purge()
+        }).catch((error) => console.log(error))
     }
+
+    const dispatch = useDispatch()
+    const id = useSelector((state) => state.accessToken.id)
 
     return (
         <Row>
@@ -18,14 +26,14 @@ export default function Info({ id, createDate, setLogin, rank,createButtonHandle
                     <h4>{id}</h4>
                 </Row>
                 <Row style={{ textAlign: "left" }}>
-                    <h6>{createDate}</h6>
+                    <h6>시간</h6>
                 </Row>
                 <Row>
                     <Badge>unranked</Badge>
                 </Row>
             </Col>
             <Col sm={4} style={{alignContent:"space-around"}}>
-                <h6>당신이 작성한 글의 랭크는 {rank} 입니다!</h6>
+                <h6>당신이 작성한 글의 랭크는 입니다!</h6>
             </Col>
             <Col sm={3} style={{alignContent:"center", textAlign:"right"}}>
                 <Button onClick={createButtonHandler}>등록하기</Button>

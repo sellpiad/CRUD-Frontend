@@ -1,13 +1,16 @@
-import React from 'react';
+import { React, useEffect, useState } from 'react';
+
+import { Col, Container, Row, Stack } from 'react-bootstrap';
+
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import Board from './components/Board';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { Container, Row, Col, Stack } from 'react-bootstrap';
-import { useEffect, useState } from 'react';
+
 import CreateModal from './components/CreateModal';
 import EditModal from './components/EditModal';
+import Login from './components/LoginBox';
 import PostModal from './components/PostModal';
-import Login from './components/Login';
+
 
 function App() {
 
@@ -22,14 +25,18 @@ function App() {
   const editButtonHandler = () => closeEditModal(true)
 
   // 포스트 아이디 
-  const [postId, setPostId] = useState(null);
+  const [postId, setPostId] = useState(null)
+
 
   useEffect(() => {
     // 포스트 모달이 닫혔지만, 포스트 아이디가 여전히 남아있다면 수정 버튼이 클릭 된 것.
     if (!isPostOpen && postId != null) {
       editButtonHandler()
     }
-  },[isPostOpen,isCreateOpen,isEditOpen])
+  }, [isPostOpen, isCreateOpen, isEditOpen])
+
+
+
 
 
   return (

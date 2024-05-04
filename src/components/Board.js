@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Container, Row } from "react-bootstrap";
 import styled from "styled-components";
+import { instance } from "../util/useAxiosInter";
 
 
 // 테이블 스타일 정의
@@ -41,7 +42,7 @@ export default function Board({isCreateOpen,isPostOpen,isEditOpen,editButtonHand
 
     useEffect(() => {
         if (!isCreateOpen && !isPostOpen && !isEditOpen) {
-            axios.get('/api/getList')
+            instance.get('/api/getList')
                 .then(response => {
                     setHeaders(response.data)
                 })

@@ -1,25 +1,26 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Modal, Button } from "react-bootstrap";
+import { Button, Modal } from "react-bootstrap";
+import { useSelector } from "react-redux";
+import { instance } from "../util/useAxiosInter";
 
 export default function PostModal({ show, onHide, postId, setPostId }) {
 
-    const [post, setPost] = useState({ title: '', author: '', date: '', content: '', editable: false, deletable: false});
+    const [post, setPost] = useState({ title: '', author: '', date: '', content: '', editable: false, deletable: false });
     const [deleteBtn, setDeleteBtn] = useState(false);
 
     const clickedDeleteBtn = (event) => setDeleteBtn(true)
-    const clickedEditBtn = (event) => {onHide()}
+    const clickedEditBtn = (event) => { onHide() }
     const clickedExitBtn = () => {
         onHide()
         setPostId()
     }
 
-
     // 포스트 내용 얻어오기
     useEffect(() => {
 
         if (postId !== null && postId !== undefined) {
-            axios.get('/api/getPost?id=' + postId)
+            instance.get('/api/getPost?id=' + postId)
                 .then((response) => { setPost(response.data); })
                 .catch((error) => console.log(error));
         }
@@ -30,8 +31,8 @@ export default function PostModal({ show, onHide, postId, setPostId }) {
     useEffect(() => {
 
         if (deleteBtn == true) {
-            axios.get('/api/deletePost?id=' + postId)
-                .then((response) => {onHide(); setPostId(); setDeleteBtn(false);})
+            instance.get('/api/deletePost?id=' + postId)
+                .then((response) => { onHide(); setPostId(); setDeleteBtn(false); })
                 .catch(error => console.log(error))
         }
 
@@ -51,8 +52,8 @@ export default function PostModal({ show, onHide, postId, setPostId }) {
                 <p>내용: {post.content}</p>
             </Modal.Body>
             <Modal.Footer>
-                <Button style={{display: post.editable ? "inline-block" : "none"}} onClick={clickedEditBtn}>수정</Button>
-                <Button style={{display: post.deletable ? "inline-block" : "none"}} onClick={clickedDeleteBtn}>삭제</Button>
+                <Button style={{ display: post.editable ? "inline-block" : "none" }} onClick={clickedEditBtn}>수정</Button>
+                <Button style={{ display: post.deletable ? "inline-block" : "none" }} onClick={clickedDeleteBtn}>삭제</Button>
             </Modal.Footer>
         </Modal>
 
